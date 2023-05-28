@@ -204,29 +204,34 @@ void write_superblock(int fd) {
 	   correctly and delete this comment */
 	superblock.s_inodes_count      = NUM_INODES;
 	superblock.s_blocks_count      = NUM_BLOCKS;
-	superblock.s_r_blocks_count    = 0;//nothing reserved
+	superblock.s_r_blocks_count    = 1;  ///num free implies 1 block reserved
 	superblock.s_free_blocks_count = NUM_FREE_BLOCKS;
 	superblock.s_free_inodes_count = NUM_FREE_INODES;
-	superblock.s_first_data_block  = SUPERBLOCK_BLOCKNO; /* First Data Block */
-	superblock.s_log_block_size    = 0; /* 1024 */ // = 2^(slogblocksize+10)
+	superblock.s_first_data_block  = SUPERBLOCK_BLOCKNO; /* First Data Block */ ///ID of the superblock structure
+	superblock.s_log_block_size    = 0; /* 1024 */ /// = 2^(slogblocksize+10)
 	superblock.s_log_frag_size     = 0; /* 1024 */
-	superblock.s_blocks_per_group  = BLOCK_OFFSET(8);
-	superblock.s_frags_per_group   = BLOCK_OFFSET(8);
-	superblock.s_inodes_per_group  = NUM_INODES;
+	superblock.s_blocks_per_group  = NUM_BLOCKS; ///1 Ki blocks of size 1KiB in a 1MiB sys means only one group
+	superblock.s_frags_per_group   = NUM_BLOCKS; ///recomended to equal blocks per group for compatibilities
+	superblock.s_inodes_per_group  = ((1024<<s_log_block_size)/sizeof(ext2_inode));
+
 	superblock.s_mtime             = current_time; /* Mount time */
 	superblock.s_wtime             = current_time; /* Write time */
 	superblock.s_mnt_count         = 1; /* Number of times mounted so far */
-	superblock.s_max_mnt_count     = 0; /* Make this unlimited */  //?
+	///assuming this is the first write
+
+	superblock.s_max_mnt_count     = -1; /* Make this unlimited */  //?
 	superblock.s_magic             = EXT2_SUPER_MAGIC; /* ext2 Signature */
-	superblock.s_state             = EXT2_ERROR_FS; /* File system is clean */
+	superblock.s_state             = EXT2_VALID_FS; /* File system is clean */ //
 	superblock.s_errors            = 0; /* Ignore the error (continue on) */
 	superblock.s_minor_rev_level   = 0; /* Leave this as 0 */
 	superblock.s_lastcheck         = current_time; /* Last check time */
 	superblock.s_checkinterval     = 1; /* Force checks by making them every 1 second */
 	superblock.s_creator_os        = EXT2_OS_LINUX; /* Linux */
+
 	superblock.s_rev_level         = 0; /* Leave this as 0 */
 	superblock.s_def_resuid        = 0; /* root */
 	superblock.s_def_resgid        = 0; /* root */
+	///keeping default vals, reserved owned by superused
 
 	/* You can leave everything below this line the same, delete this
 	   comment when you're done the lab */
