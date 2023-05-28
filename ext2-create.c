@@ -390,41 +390,41 @@ void write_inode_table(int fd) {
 	write_inode(fd, EXT2_ROOT_INO, &root_dir_inode);
 
 
-	struct ext2_inode hellow_world_inode = {0};
-	hellow_world_inode.i_mode = EXT2_S_IFDIR
+	struct ext2_inode hello_world_inode = {0};
+	hello_world_inode.i_mode = EXT2_S_IFREG
 	                              | EXT2_S_IRUSR
 	                              | EXT2_S_IWUSR
 	                              | EXT2_S_IRGRP
 	                              | EXT2_S_IROTH;
-	hellow_world_inode.i_uid = 1000 ;
-	hellow_world_inode.i_size = 1024;
-	hellow_world_inode.i_atime = current_time;
-	hellow_world_inode.i_ctime = current_time;
-	hellow_world_inode.i_mtime = current_time;
-	hellow_world_inode.i_dtime = 0;
-	hellow_world_inode.i_gid = 1000 ;
-	hellow_world_inode.i_links_count = 1;
-	hellow_world_inode.i_blocks = 2; /* These are oddly 512 blocks */
-	hellow_world_inode.i_block[0] = HELLO_WORLD_FILE_BLOCKNO;
-	write_inode(fd, HELLO_INO, &hellow_world_inode);
+	hello_world_inode.i_uid = 1000 ;
+	hello_world_inode.i_size = 1024;
+	hello_world_inode.i_atime = current_time;
+	hello_world_inode.i_ctime = current_time;
+	hello_world_inode.i_mtime = current_time;
+	hello_world_inode.i_dtime = 0;
+	hello_world_inode.i_gid = 1000 ;
+	hello_world_inode.i_links_count = 1;
+	hello_world_inode.i_blocks = 2; /* These are oddly 512 blocks */
+	hello_world_inode.i_block[0] = HELLO_WORLD_FILE_BLOCKNO;
+	write_inode(fd, HELLO_INO, &hello_world_inode);
 
-	struct ext2_inode hellow_inode = {0};
-	hellow_inode.i_mode = EXT2_S_IFDIR
+	struct ext2_inode hello_inode = {0};
+	hello_inode.i_mode = EXT2_S_IFLNK
 	                              | EXT2_S_IRUSR
 	                              | EXT2_S_IWUSR
 	                              | EXT2_S_IRGRP
 	                              | EXT2_S_IROTH;
-	hellow_inode.i_uid = 1000 ;
-	hellow_inode.i_size = 1024;
-	hellow_inode.i_atime = current_time;
-	hellow_inode.i_ctime = current_time;
-	hellow_inode.i_mtime = current_time;
-	hellow_inode.i_dtime = 0;
-	hellow_inode.i_gid = 1000 ;
-	hellow_inode.i_links_count = 1;
-	hellow_inode.i_blocks = 2; /* These are oddly 512 blocks */
-	hellow_inode.i_block[0] = HELLO_WORLD_FILE_BLOCKNO;
-	write_inode(fd, HELLO_INO, &hellow_inode);
+	hello_inode.i_uid = 1000 ;
+	hello_inode.i_size = 1024;
+	hello_inode.i_atime = current_time;
+	hello_inode.i_ctime = current_time;
+	hello_inode.i_mtime = current_time;
+	hello_inode.i_dtime = 0;
+	hello_inode.i_gid = 1000 ;
+	hello_inode.i_links_count = 1;
+	hello_inode.i_blocks = 2; /* These are oddly 512 blocks */
+	hello_inode.i_block[0] = HELLO_WORLD_FILE_BLOCKNO;
+	write_inode(fd, HELLO_INO, &hello_inode);
 
 }
 
