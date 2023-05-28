@@ -362,15 +362,103 @@ void write_inode_table(int fd) {
 	lost_and_found_inode.i_links_count = 2;
 	lost_and_found_inode.i_blocks = 2; /* These are oddly 512 blocks */
 	lost_and_found_inode.i_block[0] = LOST_AND_FOUND_DIR_BLOCKNO;
+
 	write_inode(fd, LOST_AND_FOUND_INO, &lost_and_found_inode);
 
 	/* You should add your 3 other inodes in this function and delete this
 	   comment */
-	
+
+	struct ext2_inode root_dir_inode = {0};
+	root_dir_inode.i_mode = EXT2_S_IFDIR
+	                              | EXT2_S_IRUSR
+	                              | EXT2_S_IWUSR
+	                              | EXT2_S_IXUSR
+	                              | EXT2_S_IRGRP
+	                              | EXT2_S_IXGRP
+	                              | EXT2_S_IROTH
+	                              | EXT2_S_IXOTH;
+	root_dir_inode.i_uid = 0;
+	root_dir_inode.i_size = 1024;
+	root_dir_inode.i_atime = current_time;
+	root_dir_inode.i_ctime = current_time;
+	root_dir_inode.i_mtime = current_time;
+	root_dir_inode.i_dtime = 0;
+	root_dir_inode.i_gid = 0;
+	root_dir_inode.i_links_count = 3; ///. , .. , /lost_and_found/..
+	root_dir_inode.i_blocks = 2; /* These are oddly 512 blocks */
+	root_dir_inode.i_block[0] = ROOT_DIR_BLOCKNO;
+	write_inode(fd, EXT2_ROOT_INO, &root_dir_inode);
+
+
+	struct ext2_inode hellow_world_inode = {0};
+	hellow_world_inode.i_mode = EXT2_S_IFDIR
+	                              | EXT2_S_IRUSR
+	                              | EXT2_S_IWUSR
+	                              | EXT2_S_IRGRP
+	                              | EXT2_S_IROTH;
+	hellow_world_inode.i_uid = 1000 ;
+	hellow_world_inode.i_size = 1024;
+	hellow_world_inode.i_atime = current_time;
+	hellow_world_inode.i_ctime = current_time;
+	hellow_world_inode.i_mtime = current_time;
+	hellow_world_inode.i_dtime = 0;
+	hellow_world_inode.i_gid = 1000 ;
+	hellow_world_inode.i_links_count = 1;
+	hellow_world_inode.i_blocks = 2; /* These are oddly 512 blocks */
+	hellow_world_inode.i_block[0] = HELLO_WORLD_FILE_BLOCKNO;
+	write_inode(fd, HELLO_INO, &hellow_world_inode);
+
+	struct ext2_inode hellow_inode = {0};
+	hellow_inode.i_mode = EXT2_S_IFDIR
+	                              | EXT2_S_IRUSR
+	                              | EXT2_S_IWUSR
+	                              | EXT2_S_IRGRP
+	                              | EXT2_S_IROTH;
+	hellow_inode.i_uid = 1000 ;
+	hellow_inode.i_size = 1024;
+	hellow_inode.i_atime = current_time;
+	hellow_inode.i_ctime = current_time;
+	hellow_inode.i_mtime = current_time;
+	hellow_inode.i_dtime = 0;
+	hellow_inode.i_gid = 1000 ;
+	hellow_inode.i_links_count = 1;
+	hellow_inode.i_blocks = 2; /* These are oddly 512 blocks */
+	hellow_inode.i_block[0] = HELLO_WORLD_FILE_BLOCKNO;
+	write_inode(fd, HELLO_INO, &hellow_inode);
+
 }
 
 void write_root_dir_block(int fd) {
-	/* This is all you */
+	off_t off = BLOCK_OFFSET(ROOT_DIR_BLOCKNO);
+	off = lseek(fd, off, SEEK_SET);
+	if (off == -1) {
+		errno_exit("lseek");
+	}
+
+	ssize_t bytes_remaining = BLOCK_SIZE;
+
+	struct ext2_dir_entry current_entry = {0};
+	dir_entry_set(current_entry, EXT2_ROOT_INO, ".");
+	dir_entry_write(current_entry, fd);
+
+	bytes_remaining -= current_entry.rec_len;
+
+	struct ext2_dir_entry parent_entry = {0};
+	dir_entry_set(parent_entry, EXT2_ROOT_INO, "..");
+	dir_entry_write(parent_entry, fd);
+
+	bytes_remaining -= parent_entry.rec_len;
+
+	struct ext2_dir_entry laf_entry = {0};
+	dir_entry_set(laf_entry, LOST_AND_FOUND_INO, "lost+found");
+	dir_entry_write(laf_entry, fd);
+
+	bytes_remaining -= laf_entry.rec_len;
+
+
+	struct ext2_dir_entry fill_entry = {0};
+	fill_entry.rec_len = bytes_remaining;
+	dir_entry_write(fill_entry, fd);
 }
 
 void write_lost_and_found_dir_block(int fd) {
