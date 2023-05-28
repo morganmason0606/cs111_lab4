@@ -415,15 +415,17 @@ void write_inode_table(int fd) {
 	                              | EXT2_S_IRGRP
 	                              | EXT2_S_IROTH;
 	hello_inode.i_uid = 1000 ;
-	hello_inode.i_size = 1024;
+	hello_inode.i_size = strlen("./hello-world");
 	hello_inode.i_atime = current_time;
 	hello_inode.i_ctime = current_time;
 	hello_inode.i_mtime = current_time;
 	hello_inode.i_dtime = 0;
 	hello_inode.i_gid = 1000 ;
 	hello_inode.i_links_count = 1;
-	hello_inode.i_blocks = 2; /* These are oddly 512 blocks */
-	hello_inode.i_block[0] = HELLO_WORLD_INO;
+	hello_inode.i_blocks = 0; /* These are oddly 512 blocks */
+
+	memcpy(&hello_inode.i_block, "./hello-world", strlen("./hello-world"));
+
 	write_inode(fd, HELLO_INO, &hello_inode);
 
 }
@@ -455,6 +457,17 @@ void write_root_dir_block(int fd) {
 
 	bytes_remaining -= laf_entry.rec_len;
 
+	struct ext2_dir_entry hello_world_entry = {0};
+	dir_entry_set(hello_world_entry, HELLO_WORLD_INO, "hello-world");
+	dir_entry_write(hello_world_entry, fd);
+
+	bytes_remaining -= hello_world_entry.rec_len;
+
+	struct ext2_dir_entry hello_entry = {0};
+	dir_entry_set(hello_entry, HELLO_INO, "hello");
+	dir_entry_write(hello_entry, fd);
+
+	bytes_remaining -= hello_entry.rec_len;
 
 	struct ext2_dir_entry fill_entry = {0};
 	fill_entry.rec_len = bytes_remaining;
