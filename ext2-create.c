@@ -397,7 +397,7 @@ void write_inode_table(int fd) {
 	                              | EXT2_S_IRGRP
 	                              | EXT2_S_IROTH;
 	hello_world_inode.i_uid = 1000 ;
-	hello_world_inode.i_size = 1024;
+	hello_world_inode.i_size = 12;
 	hello_world_inode.i_atime = current_time;
 	hello_world_inode.i_ctime = current_time;
 	hello_world_inode.i_mtime = current_time;
@@ -488,7 +488,16 @@ void write_lost_and_found_dir_block(int fd) {
 }
 
 void write_hello_world_file_block(int fd) {
-	/* This is all you */
+	off_t off = BLOCK_OFFSET(HELLO_WORLD_FILE_BLOCKNO);
+	off = lseek(fd, off, SEEK_SET);
+	if (off == -1) {
+		errno_exit("lseek");
+	}
+
+	if(write(fd, "Hello world\n",12)!=12){
+		errno_exit("write");
+	}
+
 }
 
 int main(int argc, char *argv[]) {

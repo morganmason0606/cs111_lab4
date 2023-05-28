@@ -1,0 +1,3 @@
+#!/bin/bash
+make; ./ext2-create; dumpe2fs cs111-base.img >res.txt;
+fsck.ext2 cs111-base.img
