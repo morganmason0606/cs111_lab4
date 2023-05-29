@@ -376,7 +376,6 @@ void write_inode_table(int fd) {
 
 	/* You should add your 3 other inodes in this function and delete this
 	   comment */
-	return; 
 
 	struct ext2_inode root_dir_inode = {0};
 	root_dir_inode.i_mode = EXT2_S_IFDIR
@@ -441,7 +440,6 @@ void write_inode_table(int fd) {
 }
 
 void write_root_dir_block(int fd) {
-	return; 
 	off_t off = BLOCK_OFFSET(ROOT_DIR_BLOCKNO);
 	off = lseek(fd, off, SEEK_SET);
 	if (off == -1) {
@@ -512,7 +510,6 @@ void write_lost_and_found_dir_block(int fd) {
 }
 
 void write_hello_world_file_block(int fd) {
-	return; 
 	off_t off = BLOCK_OFFSET(HELLO_WORLD_FILE_BLOCKNO);
 	off = lseek(fd, off, SEEK_SET);
 	if (off == -1) {
