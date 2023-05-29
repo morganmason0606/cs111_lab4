@@ -202,44 +202,33 @@ void write_superblock(int fd) {
 
 	struct ext2_superblock superblock = {0};
 
-	/* These are intentionally incorrectly set as 0, you should set them
-	   correctly and delete this comment */
+
 	superblock.s_inodes_count      = NUM_INODES;
 	superblock.s_blocks_count      = NUM_BLOCKS;
 	superblock.s_r_blocks_count    = 0;  
 	superblock.s_free_blocks_count = NUM_FREE_BLOCKS;
 	superblock.s_free_inodes_count = NUM_FREE_INODES;
-	superblock.s_first_data_block  = SUPERBLOCK_BLOCKNO; /* First Data Block */ ///ID of the superblock structure
-	superblock.s_log_block_size    = 0; /* 1024 */ /// = 2^(slogblocksize+10)
-	superblock.s_log_frag_size     = 0; /* 1024 */
-	
-	superblock.s_blocks_per_group  = 8192; ///1 Ki blocks of size 1KiB in a 1MiB sys means only one group
-	superblock.s_frags_per_group   = 8192; ///recomended to equal blocks per group for compatibilities
-	///says above 2 should be 8192 ? 
-
-	superblock.s_inodes_per_group  = NUM_INODES; /// if there is only one group, all inodes memeber
-
+	superblock.s_first_data_block  = SUPERBLOCK_BLOCKNO; /* First Data Block */ 
+	superblock.s_log_block_size    = 0; /* 1024 */ 
+	superblock.s_log_frag_size     = 0; /* 1024 */	
+	superblock.s_blocks_per_group  = 8192; 
+	superblock.s_frags_per_group   = 8192; 
+	superblock.s_inodes_per_group  = NUM_INODES; 
 	superblock.s_mtime             = 0; /* Mount time */
 	superblock.s_wtime             = current_time; /* Write time */
 	superblock.s_mnt_count         = 0; /* Number of times mounted so far */
-	///assuming this is the first write
-
-	superblock.s_max_mnt_count     = -1; /* Make this unlimited */  //?
+	superblock.s_max_mnt_count     = -1; /* Make this unlimited */  
 	superblock.s_magic             = EXT2_SUPER_MAGIC; /* ext2 Signature */
-	superblock.s_state             = EXT2_VALID_FS; /* File system is clean */ //
+	superblock.s_state             = EXT2_VALID_FS; /* File system is clean */ 
 	superblock.s_errors            = EXT2_ERRORS_CONTINUE; /* Ignore the error (continue on) */
 	superblock.s_minor_rev_level   = 0; /* Leave this as 0 */
 	superblock.s_lastcheck         = current_time; /* Last check time */
 	superblock.s_checkinterval     = 1; /* Force checks by making them every 1 second */
 	superblock.s_creator_os        = EXT2_OS_LINUX; /* Linux */
-
 	superblock.s_rev_level         = 0; /* Leave this as 0 */
 	superblock.s_def_resuid        = 0; /* root */
 	superblock.s_def_resgid        = 0; /* root */
-	///keeping default vals, reserved owned by superused
 
-	/* You can leave everything below this line the same, delete this
-	   comment when you're done the lab */
 	superblock.s_uuid[0] = 0x5A;
 	superblock.s_uuid[1] = 0x1E;
 	superblock.s_uuid[2] = 0xAB;
@@ -273,8 +262,6 @@ void write_block_group_descriptor_table(int fd) {
 
 	struct ext2_block_group_descriptor block_group_descriptor = {0};
 
-	/* These are intentionally incorrectly set as 0, you should set them
-	   correctly and delete this comment */
 	block_group_descriptor.bg_block_bitmap = BLOCK_BITMAP_BLOCKNO;
 	block_group_descriptor.bg_inode_bitmap = INODE_BITMAP_BLOCKNO;
 	block_group_descriptor.bg_inode_table = INODE_TABLE_BLOCKNO;
@@ -289,8 +276,7 @@ void write_block_group_descriptor_table(int fd) {
 }
 
 void write_block_bitmap(int fd) {
-	/* This is all you */
-	//SEEK to block bitmap block, defined above
+
 	
 	off_t off = lseek(fd, BLOCK_OFFSET(BLOCK_BITMAP_BLOCKNO), SEEK_SET);
 	if (off == -1) {
@@ -378,8 +364,6 @@ void write_inode_table(int fd) {
 
 	write_inode(fd, LOST_AND_FOUND_INO, &lost_and_found_inode);
 
-	/* You should add your 3 other inodes in this function and delete this
-	   comment */
 
 	struct ext2_inode root_dir_inode = {0};
 	root_dir_inode.i_mode = EXT2_S_IFDIR
@@ -397,7 +381,7 @@ void write_inode_table(int fd) {
 	root_dir_inode.i_mtime = current_time;
 	root_dir_inode.i_dtime = 0;
 	root_dir_inode.i_gid = 0;
-	root_dir_inode.i_links_count = 3; ///. , .. , /lost_and_found/..
+	root_dir_inode.i_links_count = 3; 
 	root_dir_inode.i_blocks = 2; /* These are oddly 512 blocks */
 	root_dir_inode.i_block[0] = ROOT_DIR_BLOCKNO;
 	write_inode(fd, EXT2_ROOT_INO, &root_dir_inode);
