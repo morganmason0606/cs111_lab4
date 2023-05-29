@@ -428,7 +428,7 @@ void write_inode_table(int fd) {
 	                              | EXT2_S_IRGRP
 	                              | EXT2_S_IROTH;
 	hello_inode.i_uid = 1000 ;
-	hello_inode.i_size = strlen("./hello-world");
+	hello_inode.i_size = strlen("hello-world");
 	hello_inode.i_atime = current_time;
 	hello_inode.i_ctime = current_time;
 	hello_inode.i_mtime = current_time;
@@ -437,7 +437,7 @@ void write_inode_table(int fd) {
 	hello_inode.i_links_count = 1;
 	hello_inode.i_blocks = 0; /* These are oddly 512 blocks */
 
-	memcpy(&hello_inode.i_block, "./hello-world", strlen("./hello-world"));
+	memcpy(&hello_inode.i_block, "hello-world", strlen("hello-world"));
 
 	write_inode(fd, HELLO_INO, &hello_inode);
 
