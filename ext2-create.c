@@ -298,18 +298,18 @@ void write_block_bitmap(int fd) {
 	}
 
 	
-	char bitmap[NUM_BLOCKS] = {0};
+	char bitmap[BLOCK_SIZE] = {0};
 
 	bitmap[0] = 0xff;
 	bitmap[1] = 0xff;
 	bitmap[2] = 0x7f;
 
 	bitmap[127] = 0x80;
-	for(int i = 128; i < NUM_BLOCKS; i++){
+	for(int i = NUM_BLOCKS/8; i < BLOCK_SIZE; i++){
 		bitmap[i] = 0xff;
 	} 
 
-	if (write(fd, bitmap, NUM_BLOCKS) != NUM_BLOCKS) {
+	if (write(fd, bitmap, BLOCK_SIZE) != BLOCK_SIZE) {
 		errno_exit("write");
 	}
 	
@@ -323,12 +323,16 @@ void write_inode_bitmap(int fd) {
 		errno_exit("lseek");
 	}
 
-	char bitmap[NUM_INODES/4] = {0};
+	char bitmap[BLOCK_SIZE] = {0};
 	bitmap[0] = 0xff;
 	bitmap[1] = 0x1f;
 
+	for(int i = NUM_INODES/8; i < BLOCK_SIZE; i++){
+		bitmap[i] = 0xff; 
+	}
 
-	if (write(fd, bitmap, NUM_INODES) != NUM_INODES) {
+
+	if (write(fd, bitmap, (BLOCK_SIZE)) != (BLOCK_SIZE)) {
 		errno_exit("write");
 	}
 	
@@ -415,7 +419,7 @@ void write_inode_table(int fd) {
 	hello_world_inode.i_links_count = 1;
 	hello_world_inode.i_blocks = 2; /* These are oddly 512 blocks */
 	hello_world_inode.i_block[0] = HELLO_WORLD_FILE_BLOCKNO;
-	write_inode(fd, HELLO_INO, &hello_world_inode);
+	write_inode(fd, HELLO_WORLD_INO, &hello_world_inode);
 
 	struct ext2_inode hello_inode = {0};
 	hello_inode.i_mode = EXT2_S_IFLNK
