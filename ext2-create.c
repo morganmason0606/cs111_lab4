@@ -213,9 +213,10 @@ void write_superblock(int fd) {
 	superblock.s_log_block_size    = 0; /* 1024 */ /// = 2^(slogblocksize+10)
 	superblock.s_log_frag_size     = 0; /* 1024 */
 	
-	superblock.s_blocks_per_group  = NUM_BLOCKS; ///1 Ki blocks of size 1KiB in a 1MiB sys means only one group
-	superblock.s_frags_per_group   = NUM_BLOCKS; ///recomended to equal blocks per group for compatibilities
+	superblock.s_blocks_per_group  = 8192; ///1 Ki blocks of size 1KiB in a 1MiB sys means only one group
+	superblock.s_frags_per_group   = 8192; ///recomended to equal blocks per group for compatibilities
 	///says above 2 should be 8192 ? 
+
 	superblock.s_inodes_per_group  = NUM_INODES; /// if there is only one group, all inodes memeber
 
 	superblock.s_mtime             = 0; /* Mount time */
@@ -290,20 +291,28 @@ void write_block_group_descriptor_table(int fd) {
 void write_block_bitmap(int fd) {
 	/* This is all you */
 	//SEEK to block bitmap block, defined above
+	
 	off_t off = lseek(fd, BLOCK_OFFSET(BLOCK_BITMAP_BLOCKNO), SEEK_SET);
 	if (off == -1) {
 		errno_exit("lseek");
 	}
 
 	
-	char* bitmap = (char*) calloc(NUM_BLOCKS, 1);
-	*(int*)bitmap |= (~(-1<<LAST_BLOCK)); //(I know int* is janky,)
+	char bitmap[NUM_BLOCKS] = {0};
+
+	bitmap[0] = 0xff;
+	bitmap[1] = 0xff;
+	bitmap[2] = 0x7f;
+
+	bitmap[127] = 0x80;
+	for(int i = 128; i < NUM_BLOCKS; i++){
+		bitmap[i] = 0xff;
+	} 
 
 	if (write(fd, bitmap, NUM_BLOCKS) != NUM_BLOCKS) {
 		errno_exit("write");
 	}
 	
-	free(bitmap);
 
 	
 }
@@ -314,15 +323,15 @@ void write_inode_bitmap(int fd) {
 		errno_exit("lseek");
 	}
 
-	
-	char* bitmap = (char*) calloc(NUM_INODES, 1);
-	*(int*)bitmap |= (~(-1<<LAST_INO)); //(I know int* is janky,)
+	char bitmap[NUM_INODES/4] = {0};
+	bitmap[0] = 0xff;
+	bitmap[1] = 0x1f;
+
 
 	if (write(fd, bitmap, NUM_INODES) != NUM_INODES) {
 		errno_exit("write");
 	}
 	
-	free(bitmap);
 
 }
 
@@ -367,6 +376,7 @@ void write_inode_table(int fd) {
 
 	/* You should add your 3 other inodes in this function and delete this
 	   comment */
+	return; 
 
 	struct ext2_inode root_dir_inode = {0};
 	root_dir_inode.i_mode = EXT2_S_IFDIR
@@ -431,6 +441,7 @@ void write_inode_table(int fd) {
 }
 
 void write_root_dir_block(int fd) {
+	return; 
 	off_t off = BLOCK_OFFSET(ROOT_DIR_BLOCKNO);
 	off = lseek(fd, off, SEEK_SET);
 	if (off == -1) {
@@ -501,6 +512,7 @@ void write_lost_and_found_dir_block(int fd) {
 }
 
 void write_hello_world_file_block(int fd) {
+	return; 
 	off_t off = BLOCK_OFFSET(HELLO_WORLD_FILE_BLOCKNO);
 	off = lseek(fd, off, SEEK_SET);
 	if (off == -1) {
