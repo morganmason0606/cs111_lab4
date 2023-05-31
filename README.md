@@ -1,4 +1,3 @@
-aosjdf;lakjsdf;lakjsdf;llasjdf NOT DONE, GET EXAMPLE LS _AIN OUTPUT
 ## UID: 705747359
 
 (IMPORTANT: Only replace the above numbers with your true UID, do not modify spacing and newlines, otherwise your tarfile might not be created correctly)
@@ -42,5 +41,5 @@ you can also check the files are correct with:
 ## Cleaning up
 
 first return to the original dir `cd ..`
-then you can run `make clean` to remove the img and executables
+then you can run `make clean` to remove the img and executables.
 to unmount, run `sudo umount mnt`
